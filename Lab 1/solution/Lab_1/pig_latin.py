@@ -1,6 +1,5 @@
 import re
 
-# A cheaty, and compact way of encoding pig latin  :sweat_smile: It is complete in one dialect that does not use yay.
 # Find every word that starts with any sequence of non-vowels followed by any set of alphanumericals.
 # Making the assumption that words to not contain numbers.
 
@@ -16,7 +15,11 @@ def sentence_to_pig_latin(text):
     # But if you look for any consontant grouping, consisting of 0-inf length
     # followed by any group of alphanumericals of length 1-inf
     # followed by then any non alphanumerical i.e symbols or whitespaces
+    # You can target and move groups in regex with \n for the nth group.
     # You can ensure a pretty ok encoder for piglatin, that handles symbols, and can be written in pure regex.
+
+    # You can also tokenize the sentence and run the word_to_pig_latin on all tokens that are strictly words, and join the sentences.
+    # It is mostly preference in my view.
 
     pattern = re.compile(r'([b-df-hj-np-tv-z]*)([\w]+)([ ^\w]?)')
     return pattern.sub(r'\2\1ay\3', text.lower())
