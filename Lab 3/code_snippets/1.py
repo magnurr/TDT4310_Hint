@@ -1,55 +1,35 @@
-from sklearn.metrics import confusion_matrix
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn import svm
-import csv
-from nltk import stem
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import re
+from random_word import RandomWords
+import random
 from sklearn.model_selection import train_test_split
-
-stemmer = stem.PorterStemmer()
-content = []
-
-with open('spam.csv', newline='', encoding='latin-1') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',')
-    for row in spamreader:
-        content.append(row)
-texts = [row[1] for row in content]
-labels = [row[0] for row in content]
-stopwords = set(stopwords.words('english'))
+import nltk
+r = RandomWords()
 
 
-def encode_labels(ls):
-    # Ternary operator + list comprehension, horrible to read, easy to write :/
-    return [1 if ls == "ham" else 0 for label in ls]
+def generate_dataset():
+    output = []
+    for x in range(10):
+        label = random.randint(0, 1)
+        text = r.get_random_words(
+            minLength=3, maxLength=15, limit=random.randint(5, 15))
+        if not text:
+            continue
+        output.append(tuple([text, label]))
+    return output
 
 
-def text_cleaning(text):
-    text = text.lower()
-    text = " ".join([word for word in word_tokenize(text)
-                     if not word in stopwords])
-    text = re.sub(r"[!?:;-,.<>]", r"", text)
-    text = " ".join([stemmer.stem(word) for word in text])
-    return text
+def generate_features(text):
+    return {"last-word": text[-1], "Amount-of-words": len(text), "Length of text": len(" ".join(text))}
 
-#apply functions to dataset 
-map(text_cleaning, texts)
-map(encode_labels, labels)
 
-# split it 
-X_train, X_test, y_train, y_test = train_test_split(
-    texts, labels, test_size=0.1, random_state=420)
+labeled_features = generate_dataset()
+featuresets = [(generate_features(text), label)
+               for (text, label) in labeled_features]
 
-# Vectorize :slurp: 
-vectorizer = TfidfVectorizer()
-X_train = vectorizer.fit_transform(X_train)
-# OMG I AM MACHINE LEARNING! 
-svm = svm.SVC(C=1000)
-svm.fit(X_train, y_train)
-# Evaluate performacnce
-X_test = vectorizer.transform(X_test)
-y_pred = svm.predict(X_test)
+print("Training :)")
+train_set, test_set = featuresets[5:], featuresets[:5]
 
-#Percision and recall 
-print(confusion_matrix(y_test, y_pred))
+dt_classifier = nltk.DecisionTreeClassifier.train(train_set)
+nb_classifier = nltk.NaiveBayesClassifier.train(train_set)
+
+print(nltk.classify.accuracy(dt_classifier, test_set))
+print(nltk.classify.accuracy(nb_classifier, test_set))

@@ -3,9 +3,12 @@ from nltk.corpus import state_union
 
 cfd = nltk.ConditionalFreqDist(
     (target, fileid[:4])
+    # For each file
     for fileid in state_union.fileids()
+    # Find all the words
     for w in state_union.words(fileid)
     for target in ['men', 'women', 'people']
+    # filter out so we only return words in target
     if w.lower() == target)
 cfd.plot()
 

@@ -4,7 +4,8 @@ from nltk.corpus import movie_reviews
 import random
 
 documents = [(list(movie_reviews.words(fileid)), category)
-             for category in movie_reviews.categories() for fileid in movie_reviews.fileids(category)]
+             for category in movie_reviews.categories()
+             for fileid in movie_reviews.fileids(category)]
 all_words = FreqDist(w.lower() for w in movie_reviews.words())
 word_features = list(all_words)[:2000]
 
