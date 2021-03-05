@@ -16,7 +16,6 @@ stop_words = set(stopwords.words("english"))
 def document_features(document):
     document_words = set(document)
     features = {}
-    dummycount = 0
     for word in word_features:
         features['contains({})'.format(word)] = (word in document_words)
     return features

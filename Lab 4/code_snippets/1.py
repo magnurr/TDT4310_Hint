@@ -6,8 +6,13 @@ tagged_sents = nltk.corpus.brown.tagged_sents()
 
 def chunk(sentence):
     grammar = r"""
-    NOUNP: {<DT>?<JJ.*>*<NN.*>+} # Noun phrase
-    CLAUSE: {<VB><NOUNP>}    # Verb"""
+    NP: {<DT>? <JJ>* <NN>*} # NP
+    P: {<IN>}           # Preposition
+    V: {<V.*>}          # Verb
+    PP: {<P> <NP>}      # PP -> P NP
+    VP: {<V> <NP|PP>*}  # VP -> V (NP|PP)*# Noun phrase
+    CLAUSE:{<VB> <NP>}
+       # Verb"""
     parser = nltk.RegexpParser(grammar)
     result = parser.parse(sentence)
     return result
@@ -41,9 +46,7 @@ for sent in tagged_sents:
 ('eat', 'Western')
 ('limit', 'delays')
 ('use', 'wood')
-('commit', 'suicide')
 ('bring', 'long')
 ('sell', 'dozens')
-('describe', 'death')
 ('put', 'life')
 """
